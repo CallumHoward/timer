@@ -1,9 +1,8 @@
 window.onload = function () {
-  //const initialTime = 20 * 60;  // 20 minutes in seconds
   const initialTime = 5;
   const burstTime = 20 * 60;
   const shortBreakTime = 5 * 60;
-  const longBreakTime = 5 * 60;
+  const longBreakTime = 10 * 60;
 
   var display = document.querySelector('#time-remaining');
   var timer = new CountDownTimer(initialTime);
@@ -31,6 +30,16 @@ window.onload = function () {
     timer.start();
     updateClock();  // run initially to avoid delay
     timeInterval = setInterval(updateClock, 1000);  // run every second
+  });
+
+  document.querySelector('#stop-button').addEventListener('click', function() {
+      timer.stop();
+      clearInterval(timeInterval);
+  });
+
+  document.querySelector('#reset-button').addEventListener('click', function() {
+      timer.reset();
+      updateClock();
   });
 
   document.querySelector('#start-burst-button').addEventListener('click', function() {

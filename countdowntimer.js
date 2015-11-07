@@ -1,5 +1,6 @@
 function CountDownTimer(duration) {
   this.duration = duration;  // in seconds
+  this.originalDuration = duration;
   this.running = false;
 }
 
@@ -18,6 +19,7 @@ CountDownTimer.prototype.stop = function() {
 
 CountDownTimer.prototype.reset = function() {
   this.running = false;
+  this.duration = this.originalDuration;
 };
 
 CountDownTimer.prototype.remaining = function() {
