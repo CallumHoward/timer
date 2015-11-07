@@ -1,42 +1,37 @@
 function CountDownTimer(duration) {
-  this.duration = duration;
-  this.granularity = 1000;
-  this.tickFtns = [];
+  this.duration = duration;  // in seconds
   this.running = false;
 }
 
 // set up initial reading
 CountDownTimer.prototype.start = function() {
   if (this.running) { return; }
-
   this.running = true;
-  var start = Date.now();
-  var that = this;
-  var diff;
-  var obj;
-
-  (function timer() {
-    diff = that.duration - (((Date.now() - start) / 1000) | 0);
-
-    if (diff > 0) {
-      setTimeout(timer);
-    } else {
-      diff = 0;
-      that.running = false;
-    }
-
-    obj = CountDownTimer.parse(diff);
-    that.tickFtns.forEach(function(ftn) {
-      ftn.call(this, obj.minutes, obj.seconds);
-    }, that);
-  }());
+  this.startTime = Math.floor(Date.now() / 1000);  // seconds since epoch time
 };
 
-CountDownTimer.prototype.onTick = function(ftn) {
-  if (typeof ftn === 'function') {
-    this.tickFtns.push(ftn);
+CountDownTimer.prototype.stop = function() {
+  var remainingTime = this.remaining();
+  this.running = false;
+  this.duration = remainingTime;
+};
+
+CountDownTimer.prototype.reset = function() {
+  this.running = false;
+};
+
+CountDownTimer.prototype.remaining = function() {
+  if (!this.running) { return this.duration; }
+  var finishTime = this.startTime + this.duration;
+  var remainingTime = finishTime - Math.floor(Date.now() / 1000);
+
+  // when time is up stop the clock
+  if (remainingTime < 0) {
+    this.running = false;
+    remainingTime = 0;
   }
-  return this;
+
+  return remainingTime;
 };
 
 CountDownTimer.prototype.expired = function() {
