@@ -1,3 +1,10 @@
+h1 {
+    margin: 10px;
+    font-family: Helvetica;
+    color: darkgrey;
+    text-align: center;
+}
+
 button {
   padding: 10px;
   width: 120px;
@@ -47,4 +54,15 @@ button:active {
   margin-top: 5px;
   margin-bottom: 5px;
   color: darkgrey;
+}
+
+#progress-bar {
+    height: 4px;
+    background-color: darkgrey;
+}
+
+#progress-bar #progress {
+    height: 100%;
+    width: 0%;
+    background-color: #3498db;
 }

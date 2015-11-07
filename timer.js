@@ -5,6 +5,8 @@ window.onload = function () {
   const longBreakTime = 10 * 60;
 
   var display = document.querySelector('#time-remaining');
+  var progressBar = document.querySelector('#progress');
+  var title = document.querySelector('title');
   var timer = new CountDownTimer(initialTime);
   var timeInterval;
 
@@ -19,9 +21,11 @@ window.onload = function () {
 
   // updates the time displayed
   function updateClock() {
-      if (timer.expired()) { clearInterval(timeInterval); }
       var timeObj = CountDownTimer.parse(timer.remaining());
       display.textContent = format(timeObj.minutes, timeObj.seconds);
+      title.textContent = format(timeObj.minutes, timeObj.seconds) + " | Timer";
+      progressBar.style.width = timer.progress() + "%";
+      if (timer.expired()) { clearInterval(timeInterval); }
   }
 
   updateClock();
@@ -40,6 +44,7 @@ window.onload = function () {
   document.querySelector('#reset-button').addEventListener('click', function() {
       timer.reset();
       updateClock();
+      progressBar.style.width = timer.progress() + "%";
   });
 
   document.querySelector('#start-burst-button').addEventListener('click', function() {
