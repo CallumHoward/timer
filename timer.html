@@ -1,11 +1,76 @@
-<head>
-  <link rel="stylesheet" type="text/css" href="timer.css">
-  <title>Timer</title>
-</head>
+<style>
+h1 {
+    margin: 10px;
+    font-family: Helvetica;
+    color: darkgrey;
+    text-align: center;
+}
+
+button {
+  padding: 10px;
+  width: 120px;
+  height: 40px;
+
+  font-family: Helvetica;
+  color: white;
+  text-decoration: none;
+
+  border: 2px #add8e6 solid;
+  background: #3498db;
+  background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+  background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+  background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+  background-image: -o-linear-gradient(top, #3498db, #2980b9);
+  background-image: linear-gradient(to bottom, #3498db, #2980b9);
+  outline: none;
+}
+
+button:hover {
+  text-decoration: none;
+
+  background: #3cb0fd;
+  background-image: -webkit-linear-gradient(top, ##3cb0fd, #3498db);
+  background-image: -moz-linear-gradient(top, ##3cb0fd, #3498db);
+  background-image: -ms-linear-gradient(top, ##3cb0fd, #3498db);
+  background-image: -o-linear-gradient(top, ##3cb0fd, #3498db);
+  background-image: linear-gradient(to bottom, ##3cb0fd, #3498db);
+}
+
+button:active {
+  background: #3498db;
+}
+
+.timer-container {
+  width: 380px;
+  text-align: center;
+}
+
+.timer-display {
+  font-family: Helvetica;
+  padding: 10px;
+}
+
+.timer-display p {
+  font-size: 6em;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: darkgrey;
+}
+
+#progress-bar {
+    height: 4px;
+    background-color: darkgrey;
+}
+
+#progress-bar #progress {
+    height: 100%;
+    width: 0%;
+    background-color: #3498db;
+}
+</style>
 
 <body>
   <div class="timer-container">
-    <h1>An Odd Timer</h1>
 
     <div class="timer-header">
       <button id="start-burst-button">Start Burst</button>
@@ -16,7 +81,7 @@
     <div class="timer-display">
       <p id="time-remaining"></p>
       <div id="progress-bar">
-          <div id="progress"></div>
+        <div id="progress"></div>
       </div>
     </div>
 
@@ -27,6 +92,132 @@
     </div>
   </div>
 
-  <script type="text/javascript" src="timer.js"></script>
-  <script type="text/javascript" src="countdowntimer.js"></script>
+  <script type="text/javascript">
+window.onload = function () {
+  const initialTime = 5;
+  const burstTime = 20 * 60;
+  const shortBreakTime = 5 * 60;
+  const longBreakTime = 10 * 60;
+
+  var display = document.querySelector('#time-remaining');
+  var progressBar = document.querySelector('#progress');
+  var title = document.querySelector('title');
+  var timer = new CountDownTimer(initialTime);
+  var timeInterval;
+
+  // specifies how time is formatted when displayed
+  function format(minutes, seconds) {
+    // add a leading zero if necessary
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+    // seperate with a colon
+    return minutes + ':' + seconds;
+  }
+
+  // updates the time displayed
+  function updateClock() {
+    var timeObj = CountDownTimer.parse(timer.remaining());
+    display.textContent = format(timeObj.minutes, timeObj.seconds);
+    //title.textContent = format(timeObj.minutes, timeObj.seconds) + " | Timer";
+    progressBar.style.width = timer.progress() + "%";
+    if (timer.expired()) { clearInterval(timeInterval); }
+  }
+
+  updateClock();
+
+  document.querySelector('#start-button').addEventListener('click', function() {
+    timer.start();
+    updateClock();  // run initially to avoid delay
+    timeInterval = setInterval(updateClock, 1000);  // run every second
+  });
+
+  document.querySelector('#stop-button').addEventListener('click', function() {
+    timer.stop();
+    clearInterval(timeInterval);
+  });
+
+  document.querySelector('#reset-button').addEventListener('click', function() {
+    timer.reset();
+    updateClock();
+    progressBar.style.width = timer.progress() + "%";
+  });
+
+  document.querySelector('#start-burst-button').addEventListener('click', function() {
+    timer = new CountDownTimer(burstTime);
+    updateClock();
+  });
+
+  document.querySelector('#short-break-button').addEventListener('click', function() {
+    timer = new CountDownTimer(shortBreakTime);
+    updateClock();
+  });
+
+  document.querySelector('#long-break-button').addEventListener('click', function() {
+    timer = new CountDownTimer(longBreakTime);
+    updateClock();
+  });
+};
+  </script>
+
+  <script type="text/javascript" src="countdowntimer.js">
+function CountDownTimer(duration) {
+  this.duration = duration;  // in seconds
+  this.original = duration;
+  this.percentage = 0;
+  this.running = false;
+}
+
+// set up initial reading
+CountDownTimer.prototype.start = function() {
+  if (this.running) { return; }
+  this.running = true;
+  this.startTime = Math.floor(Date.now() / 1000);  // seconds since epoch time
+};
+
+CountDownTimer.prototype.stop = function() {
+  var remainingTime = this.remaining();
+  this.running = false;
+  this.duration = remainingTime;
+};
+
+CountDownTimer.prototype.reset = function() {
+  this.running = false;
+  this.duration = this.original;
+  this.percentage = 0;
+};
+
+CountDownTimer.prototype.remaining = function() {
+  if (!this.running) { return this.duration; }
+  var finishTime = this.startTime + this.duration;
+  var remainingTime = finishTime - Math.floor(Date.now() / 1000);
+
+  // when time is up stop the clock
+  if (remainingTime <= 0) {
+    this.running = false;
+    remainingTime = 0;
+    this.percentage = 100;
+  }
+
+  return remainingTime;
+};
+
+CountDownTimer.prototype.progress = function() {
+  if (this.running) {
+    this.percentage = (this.original - this.remaining()) / this.original * 100;
+  }
+  return this.percentage;
+};
+
+CountDownTimer.prototype.expired = function() {
+  return !this.running;
+};
+
+CountDownTimer.parse = function(seconds) {
+  return {
+    'minutes': (seconds / 60) | 0,
+    'seconds': (seconds % 60) | 0
+  };
+};
+  </script>
+
 </body>
