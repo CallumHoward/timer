@@ -48,6 +48,7 @@ button:active {
 .timer-display {
   font-family: Helvetica;
   padding: 10px;
+  min-height: 124px;
 }
 
 .timer-display p {
@@ -94,7 +95,7 @@ button:active {
 
   <script type="text/javascript">
 window.onload = function () {
-  const initialTime = 20 * 60;
+  const initialTime = 20 * 60;  // 20 mins
   const burstTime = 20 * 60;
   const shortBreakTime = 5 * 60;
   const longBreakTime = 10 * 60;
@@ -159,7 +160,7 @@ window.onload = function () {
 };
   </script>
 
-  <script type="text/javascript" src="countdowntimer.js">
+  <script type="text/javascript">
 function CountDownTimer(duration) {
   this.duration = duration;  // in seconds
   this.original = duration;
